@@ -20,7 +20,7 @@
       <x>0</x>
       <y>40</y>
       <width>811</width>
-      <height>391</height>
+      <height>401</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -545,7 +545,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
          </rect>
         </property>
         <property name="text">
-         <string>PCL</string>
+         <string>McAUE</string>
         </property>
         <property name="placeholderText">
          <string/>
@@ -796,9 +796,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>430</y>
+      <y>440</y>
       <width>811</width>
-      <height>51</height>
+      <height>41</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="menu">
