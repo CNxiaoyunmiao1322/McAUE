@@ -54,7 +54,7 @@ class Launcher(QMainWindow):
 
         # 加载 UI
         loader = QUiLoader()
-        file = QFile("MCAUE_Launcher_v3.ui")
+        file = QFile(".//UI//MCAUE_Launcher_v3.ui")
         file.open(QFile.ReadOnly)
         self.ui = loader.load(file)
         file.close()
@@ -63,7 +63,7 @@ class Launcher(QMainWindow):
         self.setMinimumSize(1100,700)
 
         # 加载 QSS
-        with open("MCAUE_v3.qss","r",encoding="utf-8") as f:
+        with open(".//UI//MCAUE_v3.qss","r",encoding="utf-8") as f:
             self.setStyleSheet(f.read())
         # 阴影
         shadow = QGraphicsDropShadowEffect()
