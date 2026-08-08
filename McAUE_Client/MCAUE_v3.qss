@@ -1,0 +1,79 @@
+
+QMainWindow {
+    background: transparent;
+}
+
+#centralwidget {
+    background:#171923;
+    border-radius:18px;
+}
+
+QWidget {
+    color:white;
+    font-family:"Microsoft YaHei";
+}
+
+QFrame#titleBar {
+    background:qlineargradient(
+        x1:0,y1:0,x2:1,y2:0,
+        stop:0 #ffb6d9,
+        stop:1 #8edcff
+    );
+    border-top-left-radius:18px;
+    border-top-right-radius:18px;
+}
+
+#titleLabel {
+    font-size:22px;
+    font-weight:bold;
+}
+
+#minButton,#closeButton {
+    background:transparent;
+    border:none;
+    color:white;
+    min-width:40px;
+    max-width:40px;
+    min-height:40px;
+    max-height:40px;
+    font-size:22px;
+    border-radius:10px;
+}
+
+#minButton:hover,#closeButton:hover {
+    background:rgba(255,255,255,0.25);
+}
+
+#pageStack {
+    background:#171923;
+}
+
+#launchButton {
+    background:#55c271;
+    border-radius:14px;
+    padding:14px 60px;
+    font-size:20px;
+}
+
+#launchButton:hover {
+    background:#6ddb88;
+}
+
+#bottomNav {
+    background:#202333;
+    border-bottom-left-radius:18px;
+    border-bottom-right-radius:18px;
+}
+
+#bottomNav QPushButton {
+    background:transparent;
+    border:none;
+    padding:12px 35px;
+    border-radius:12px;
+    color:#ccd1dc;
+}
+
+#bottomNav QPushButton:hover {
+    background:rgba(255,255,255,0.1);
+    color:white;
+}

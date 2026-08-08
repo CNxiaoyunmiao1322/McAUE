@@ -1,8 +1,8 @@
 <Solution>
-  <Project Path="McAUE_Client/McAUE_Client.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52">
+  <Project Path="McAUE_Client/McAUE_Client.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="f661b19f-9de1-4499-b6b9-0972a7693903">
     <Build Project="false" />
   </Project>
-  <Project Path="McAUE_Server/McAUE_Server.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52">
+  <Project Path="McAUE_Server/McAUE_Server.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="09a2171c-d20b-44cb-ba5e-600f717edf99">
     <Build Project="false" />
   </Project>
 </Solution>

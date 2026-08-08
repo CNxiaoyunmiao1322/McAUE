@@ -1,123 +1,144 @@
-
-"""McAUE_Client - PySide6 客户端入口。
-
-使用 QUiLoader 在运行时动态加载同目录下的 untitled.ui，
-不需要先用 pyside6-uic 把 .ui 编译成 .py。
-"""
-
-from __future__ import annotations
-
 import sys
-from pathlib import Path
-
-from PySide6.QtCore import QFile, QIODevice
-from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
-    QButtonGroup,
-    QMessageBox,
-    QPushButton,
-    QStackedWidget,
+    QMainWindow,
+    QLabel,
+    QGraphicsDropShadowEffect,
+    QGraphicsOpacityEffect
 )
-
-UI_FILE = Path(__file__).resolve().parent / "untitled.ui"
-
-# 登录方式按钮（login_way 布局里的三个按钮）
-LOGIN_BUTTONS = (
-    "login_official_button",
-    "login_offline_button",
-    "login_thirdparty_button",
+from PySide6.QtCore import (
+    Qt,
+    QFile,
+    QEvent,
+    QPoint,
+    QTimer,
+    QPropertyAnimation,
+    QEasingCurve
 )
+from PySide6.QtUiTools import QUiLoader
 
-# 底部菜单按钮 -> 对应的页面 objectName（QStackedWidget 里没有的页面会被忽略）
-MENU_BUTTONS = {
-    "tab_launch_button": "launch",
-    "tab_download_button": "page_2",
-    "tab_tool_button": "page_2",
-    "tab_settings_button": "page_2",
-    "tab_more_button": "page_2",
-}
+class Toast(QLabel):
+    def __init__(self, parent, text):
+        super().__init__(parent)
+        self.setText(text)
+        self.setAlignment(Qt.AlignCenter)
+        self.setStyleSheet("""
+        QLabel{
+            background:#323544;
+            color:white;
+            border-radius:12px;
+            padding:10px 25px;
+            font-size:14px;
+        }
+        """)
+        self.adjustSize()
+        self.move((parent.width()-self.width())//2,parent.height()-100)
+        effect = QGraphicsOpacityEffect(self)
+        self.setGraphicsEffect(effect)
+        self.anim = QPropertyAnimation(effect,b"opacity")
+        self.anim.setDuration(300)
+        self.anim.setStartValue(0)
+        self.anim.setEndValue(1)
+        self.anim.start()
+        self.show()
+        QTimer.singleShot(2000,self.close)
 
+class Launcher(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        # 无边框
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        # 支持圆角
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.dragPosition = None
 
-def load_ui(loader: QUiLoader, ui_file: Path):
-    """打开 untitled.ui 并动态加载，返回窗口对象。"""
-    if not ui_file.exists():
-        raise FileNotFoundError(f"找不到 UI 文件：{ui_file}")
+        # 加载 UI
+        loader = QUiLoader()
+        file = QFile("MCAUE_Launcher_v3.ui")
+        file.open(QFile.ReadOnly)
+        self.ui = loader.load(file)
+        file.close()
+        self.setCentralWidget(self.ui)
+        self.resize(1100,700)
+        self.setMinimumSize(1100,700)
 
-    qfile = QFile(str(ui_file))
-    if not qfile.open(QIODevice.OpenModeFlag.ReadOnly):
-        raise RuntimeError(f"无法打开 UI 文件：{ui_file}")
+        # 加载 QSS
+        with open("MCAUE_v3.qss","r",encoding="utf-8") as f:
+            self.setStyleSheet(f.read())
+        # 阴影
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(35)
+        shadow.setOffset(0,0)
+        self.ui.centralwidget.setGraphicsEffect(shadow)
 
-    try:
-        window = loader.load(qfile, None)
-    finally:
-        qfile.close()
+        # 标题栏鼠标
+        self.ui.titleBar.installEventFilter(self)
+        # 防止标题文字阻挡拖动
+        self.ui.titleLabel.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.initButton()
 
-    if window is None:
-        raise RuntimeError(f"UI 文件加载失败：{loader.errorString()}")
-    return window
-
-
-def setup_login_way(window) -> None:
-    """把 正版/离线/第三方 三个按钮加入互斥的 QButtonGroup。"""
-    login_group = QButtonGroup(window)
-    login_group.setExclusive(True)
-
-    for name in LOGIN_BUTTONS:
-        button = window.findChild(QPushButton, name)
-        if button is not None:
-            # UI 里这三个按钮没有 checkable 属性，这里补上，互斥才会生效
-            button.setCheckable(True)
-            login_group.addButton(button)
-
-
-def setup_menu(window) -> None:
-    """底部菜单按钮用互斥的 QButtonGroup 控制 QStackedWidget 的页面。"""
-    stacked_widget = window.findChild(QStackedWidget, "stackedWidget")
-    if stacked_widget is None:
-        return
-
-    menu_group = QButtonGroup(window)
-    menu_group.setExclusive(True)
-
-    pages = {
-        stacked_widget.widget(index).objectName(): index
-        for index in range(stacked_widget.count())
-    }
-
-    def switch_page(button: QPushButton) -> None:
-        page_name = MENU_BUTTONS.get(button.objectName())
-        if page_name in pages:
-            stacked_widget.setCurrentIndex(pages[page_name])
-
-    for name in MENU_BUTTONS:
-        button = window.findChild(QPushButton, name)
-        if button is not None:
-            menu_group.addButton(button)
-            button.clicked.connect(
-                lambda checked=False, b=button: switch_page(b)
+    # ======================
+    # 按钮绑定
+    # ======================
+    def initButton(self):
+        ui=self.ui
+        ui.closeButton.clicked.connect(self.close)
+        ui.minButton.clicked.connect(self.showMinimized)
+        ui.navLaunch.clicked.connect(lambda:self.switchPage(0))
+        ui.navDownload.clicked.connect(lambda:self.switchPage(1))
+        ui.navTool.clicked.connect(lambda:self.switchPage(2))
+        ui.navSetting.clicked.connect(lambda:self.switchPage(3))
+        ui.navMore.clicked.connect(lambda:self.switchPage(4))
+        ui.launchButton.clicked.connect(
+            lambda:self.showToast(
+                "正在启动 Minecraft..."
             )
+        )
 
-    # 默认停在“启动”页，并让“启动”按钮处于选中状态
-    launch_button = window.findChild(QPushButton, "tab_launch_button")
-    if launch_button is not None:
-        launch_button.setChecked(True)
+    # ======================
+    # 页面切换动画
+    # ======================
+    def switchPage(self,index):
+        stack=self.ui.pageStack
+        old=stack.currentWidget()
+        new=stack.widget(index)
+        if old==new:
+            return
+        new.move(300,0)
+        stack.setCurrentIndex(index)
+        animation=QPropertyAnimation(new,b"pos")
+        animation.setDuration(250)
+        animation.setStartValue(QPoint(300,0))
+        animation.setEndValue(QPoint(0,0))
+        animation.setEasingCurve(QEasingCurve.OutCubic)
+        animation.start()
+        self.pageAnimation=animation
 
-
-def main() -> int:
-    app = QApplication(sys.argv)
-
-    try:
-        window = load_ui(QUiLoader(), UI_FILE)
-    except Exception as exc:
-        QMessageBox.critical(None, "界面加载失败", str(exc))
-        return 1
-
-    setup_login_way(window)
-    setup_menu(window)
+    # ======================
+    # Toast
+    # ======================
+    def showToast(self,text):
+        Toast(self,text)
+    # ======================
+    # 标题栏拖动
+    # ======================
+    def eventFilter(self,obj,event):
+        if obj==self.ui.titleBar:
+            if event.type()==QEvent.MouseButtonPress:
+                if event.button()==Qt.LeftButton:
+                    self.dragPosition=(event.globalPosition().toPoint()-self.frameGeometry().topLeft()
+                    )
+                    return True
+            elif event.type()==QEvent.MouseMove:
+                if self.dragPosition:
+                    self.move(event.globalPosition().toPoint()-self.dragPosition)
+                    return True
+            elif event.type()==QEvent.MouseButtonRelease:
+                self.dragPosition=None
+                return True
+        return super().eventFilter(obj,event)
+if __name__=="__main__":
+    app=QApplication(sys.argv)
+    window=Launcher()
     window.show()
-    return app.exec()
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    sys.exit(app.exec())

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MCAUELauncher</class>
+ <widget class="QMainWindow" name="MCAUELauncher">
+  <property name="geometry">
+   <rect>
+    <x>0</x><y>0</y><width>1100</width><height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MCAUE Launcher</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="layout">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+
+    <item>
+     <widget class="QFrame" name="titleBar">
+      <property name="minimumSize"><size><width>0</width><height>60</height></size></property>
+      <layout class="QHBoxLayout">
+       <property name="leftMargin"><number>20</number></property>
+       <item>
+        <widget class="QLabel" name="titleLabel">
+         <property name="text"><string>🌸 MCAUE</string></property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="minButton"><property name="text"><string>—</string></property></widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="closeButton"><property name="text"><string>×</string></property></widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QStackedWidget" name="pageStack">
+      <widget class="QWidget" name="launchPage">
+       <layout class="QVBoxLayout">
+        <item><widget class="QLabel" name="gameTitle"><property name="text"><string>Minecraft</string></property></widget></item>
+        <item><widget class="QPushButton" name="launchButton"><property name="text"><string>启动游戏</string></property></widget></item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="downloadPage"/>
+      <widget class="QWidget" name="toolPage"/>
+      <widget class="QWidget" name="settingPage"/>
+      <widget class="QWidget" name="morePage"/>
+     </widget>
+    </item>
+
+    <item>
+     <widget class="QFrame" name="bottomNav">
+      <property name="minimumSize"><size><width>0</width><height>75</height></size></property>
+      <layout class="QHBoxLayout">
+       <item><widget class="QPushButton" name="navLaunch"><property name="text"><string>启动</string></property></widget></item>
+       <item><widget class="QPushButton" name="navDownload"><property name="text"><string>下载</string></property></widget></item>
+       <item><widget class="QPushButton" name="navTool"><property name="text"><string>工具</string></property></widget></item>
+       <item><widget class="QPushButton" name="navSetting"><property name="text"><string>设置</string></property></widget></item>
+       <item><widget class="QPushButton" name="navMore"><property name="text"><string>更多</string></property></widget></item>
+      </layout>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
