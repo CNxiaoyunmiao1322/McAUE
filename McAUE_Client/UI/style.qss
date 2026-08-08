@@ -1,0 +1,163 @@
+/* =====================================================
+   McAUE 客户端样式（蓝粉配色）
+   各区域背景颜色 + QButtonGroup 按钮（无边框大圆角）
+   ===================================================== */
+
+/* ---------- 主窗口卡片：浅蓝底 + 圆角 ---------- */
+#centralwidget {
+    background-color: rgba(235, 240, 255, 235);
+    border-radius: 12px;
+}
+
+/* ---------- 顶部标题栏：蓝 -> 粉渐变 ---------- */
+#title_area {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #4A7DFF, stop:1 #FF6FA5);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+#title {
+    background: transparent;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* 标题栏最小化 / 关闭按钮 */
+#min_button, #quit_button {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+#min_button:hover, #quit_button:hover {
+    background-color: rgba(255, 255, 255, 45);
+    border-radius: 6px;
+}
+
+#quit_button:hover {
+    background-color: rgba(255, 77, 109, 220);
+}
+
+/* ---------- 页面容器 ---------- */
+#stackedWidget {
+    background-color: transparent;
+}
+
+/* 启动页：浅蓝白 */
+#launch {
+    background-color: rgba(246, 249, 255, 240);
+}
+
+/* 其他页面（下载 / 工具 / 设置 / 更多共用的占位页）：浅粉白 */
+#page_2 {
+    background-color: rgba(255, 244, 249, 240);
+}
+
+/* 左侧登录功能区：淡粉 */
+#function_area {
+    background-color: rgba(255, 232, 243, 140);
+}
+
+/* ---------- 底部菜单栏：蓝 -> 粉渐变 ---------- */
+#horizontalLayoutWidget_2 {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #4A7DFF, stop:1 #FF6FA5);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* =====================================================
+   QButtonGroup 按钮：无边框 + 大圆角（半径 = 高度一半）
+   ===================================================== */
+
+/* 登录方式组（正版 / 离线 / 第三方）：选中为蓝色 */
+#horizontalLayoutWidget QPushButton {
+    border: none;
+    border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
+    min-height: 20px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: rgba(255, 255, 255, 180);
+    color: #3E5FCC;
+    font-weight: bold;
+}
+
+#horizontalLayoutWidget QPushButton:hover {
+    background-color: rgba(74, 125, 255, 45);
+}
+
+#horizontalLayoutWidget QPushButton:checked {
+    background-color: #4A7DFF;
+    color: #ffffff;
+}
+
+/* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多）：选中为粉色 */
+#horizontalLayoutWidget_2 QPushButton {
+    border: none;
+    border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
+    min-height: 20px;
+    padding-left: 24px;
+    padding-right: 24px;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 215);
+    font-weight: bold;
+}
+
+#horizontalLayoutWidget_2 QPushButton:hover {
+    background-color: rgba(255, 255, 255, 45);
+    color: #ffffff;
+}
+
+#horizontalLayoutWidget_2 QPushButton:checked {
+    background-color: rgba(255, 255, 255, 235);
+    color: #E84393;
+}
+
+/* ---------- 启动页其他控件 ---------- */
+
+/* 启动游戏按钮（高度 61px）：粉色主按钮 */
+#launch_game_button {
+    border: none;
+    border-radius: 30px;
+    background-color: #FF5C97;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#launch_game_button:hover {
+    background-color: #F24C8D;
+}
+
+#launch_game_button:pressed {
+    background-color: #D93E7D;
+}
+
+/* 选择版本按钮（高度 26px）：蓝色描边 */
+#choose_version_button {
+    border: 1px solid rgba(62, 95, 204, 150);
+    border-radius: 13px;
+    background-color: transparent;
+    color: #3E5FCC;
+}
+
+#choose_version_button:hover {
+    background-color: rgba(74, 125, 255, 30);
+}
+
+/* 用户名输入框（高度 31px） */
+#username_lineEdit {
+    border: 1px solid rgba(74, 125, 255, 90);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 235);
+    color: #2F3A5C;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#username_lineEdit:focus {
+    border: 1px solid #4A7DFF;
+    background-color: #ffffff;
+}
