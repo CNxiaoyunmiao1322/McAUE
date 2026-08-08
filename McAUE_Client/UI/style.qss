@@ -9,10 +9,10 @@
     border-radius: 12px;
 }
 
-/* ---------- 顶部标题栏：蓝 -> 粉渐变 ---------- */
+/* ---------- 顶部标题栏：粉 -> 浅蓝渐变 ---------- */
 #title_area {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #4A7DFF, stop:1 #FF6FA5);
+                                stop:0 #FFB6D9, stop:1 #8EDCFF);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
@@ -60,10 +60,10 @@
     background-color: rgba(255, 232, 243, 140);
 }
 
-/* ---------- 底部菜单栏：蓝 -> 粉渐变 ---------- */
+/* ---------- 底部菜单栏：粉 -> 浅蓝渐变 ---------- */
 #horizontalLayoutWidget_2 {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #4A7DFF, stop:1 #FF6FA5);
+                                stop:0 #FFB6D9, stop:1 #8EDCFF);
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
 }
@@ -72,67 +72,58 @@
    QButtonGroup 按钮：无边框 + 大圆角（半径 = 高度一半）
    ===================================================== */
 
-/* 登录方式组（正版 / 离线 / 第三方）：选中为蓝色 */
+/* 登录方式组（正版 / 离线 / 第三方） */
 #horizontalLayoutWidget QPushButton {
     border: none;
     border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
     min-height: 20px;
     padding-left: 12px;
     padding-right: 12px;
-    background-color: rgba(255, 255, 255, 180);
-    color: #3E5FCC;
+    background-color: #8EDCFF;
+    color: #1E3A5F;
     font-weight: bold;
 }
 
-#horizontalLayoutWidget QPushButton:hover {
-    background-color: rgba(74, 125, 255, 45);
-}
-
 #horizontalLayoutWidget QPushButton:checked {
-    background-color: #4A7DFF;
+    background-color: #FF80BD;      /* 选中：纯色，无渐变 */
     color: #ffffff;
 }
 
-/* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多）：选中为粉色 */
+/* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多） */
 #horizontalLayoutWidget_2 QPushButton {
     border: none;
     border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
     min-height: 20px;
     padding-left: 24px;
     padding-right: 24px;
-    background-color: transparent;
-    color: rgba(255, 255, 255, 215);
+    background-color: #8EDCFF;
+    color: #1E3A5F;
     font-weight: bold;
 }
 
-#horizontalLayoutWidget_2 QPushButton:hover {
-    background-color: rgba(255, 255, 255, 45);
-    color: #ffffff;
-}
-
 #horizontalLayoutWidget_2 QPushButton:checked {
-    background-color: rgba(255, 255, 255, 235);
-    color: #E84393;
+    background-color: #FF80BD;      /* 选中：纯色，无渐变 */
+    color: #ffffff;
 }
 
 /* ---------- 启动页其他控件 ---------- */
 
-/* 启动游戏按钮（高度 61px）：粉色主按钮 */
+/* 启动游戏按钮（高度 61px）：青色主按钮 */
 #launch_game_button {
     border: none;
     border-radius: 30px;
-    background-color: #FF5C97;
+    background-color: #40E0D0;
     color: #ffffff;
     font-size: 16px;
     font-weight: bold;
 }
 
 #launch_game_button:hover {
-    background-color: #F24C8D;
+    background-color: #2ECDBF;
 }
 
 #launch_game_button:pressed {
-    background-color: #D93E7D;
+    background-color: #26B3A6;
 }
 
 /* 选择版本按钮（高度 26px）：蓝色描边 */

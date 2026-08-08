@@ -19,8 +19,10 @@ from PySide6.QtCore import (
     QObject,
     QPoint,
     QPropertyAnimation,
+    QVariantAnimation,
     Qt,
 )
+from PySide6.QtGui import QColor
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
@@ -39,6 +41,21 @@ STYLE_DARK_FILE = Path(__file__).resolve().parent / "UI" / "style_dark.qss"
 
 # 窗口圆角半径（像素）
 CORNER_RADIUS = 12
+
+# hover 颜色过渡时长（毫秒）
+BUTTON_HOVER_MS = 100
+
+# 登录方式组 / 底部菜单组按钮的主题色
+BUTTON_COLORS_LIGHT = {
+    "normal": QColor("#8EDCFF"),
+    "hover": QColor("#FFB6D9"),
+    "checked": QColor("#FF80BD"),
+}
+BUTTON_COLORS_DARK = {
+    "normal": QColor("#3E5FCC"),
+    "hover": QColor("#E84393"),
+    "checked": QColor("#CC1970"),
+}
 
 # 登录方式按钮（互斥，UI 里已设置 checkable）
 LOGIN_BUTTONS = (
@@ -64,6 +81,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         self._ui_window = None  # 持有 QUiLoader 加载出的临时窗口，防止被回收
         self.pageAnimation = None  # 页面切换动画，防止被垃圾回收
+        self._button_colors = dict(BUTTON_COLORS_LIGHT)
+        self._button_anims: dict[QPushButton, QVariantAnimation] = {}
+        self._button_current: dict[QPushButton, QColor] = {}
+        self._animated_buttons: set[QPushButton] = set()
         self._load_ui(ui_file)
         self._setup_frameless()
         self._setup_login_way()
@@ -136,19 +157,23 @@ class MainWindow(QMainWindow):
         if scheme is None:
             scheme = QApplication.styleHints().colorScheme()
         is_dark = scheme == Qt.ColorScheme.Dark
+        self._button_colors = dict(BUTTON_COLORS_DARK if is_dark else BUTTON_COLORS_LIGHT)
         style_file = STYLE_DARK_FILE if is_dark else STYLE_FILE
         if style_file.exists():
             self.setStyleSheet(style_file.read_text(encoding="utf-8"))
-            return
-        background = (
-            "rgba(24, 28, 48, 240)" if is_dark else "rgba(235, 240, 255, 235)"
-        )
-        self.setStyleSheet(
-            "#centralwidget {"
-            f" background: {background};"
-            f" border-radius: {CORNER_RADIUS}px;"
-            "}"
-        )
+        else:
+            background = (
+                "rgba(24, 28, 48, 240)"
+                if is_dark
+                else "rgba(235, 240, 255, 235)"
+            )
+            self.setStyleSheet(
+                "#centralwidget {"
+                f" background: {background};"
+                f" border-radius: {CORNER_RADIUS}px;"
+                "}"
+            )
+        self._reset_button_colors()
 
     def _setup_login_way(self) -> None:
         """正版/离线/第三方三个登录方式按钮互斥。"""
@@ -158,6 +183,7 @@ class MainWindow(QMainWindow):
             button = getattr(self, name, None)
             if isinstance(button, QPushButton):
                 self._login_group.addButton(button)
+                self._setup_button_hover(button)
 
     def _setup_menu(self) -> None:
         """底部菜单按钮互斥，并控制 QStackedWidget 页面切换。"""
@@ -167,9 +193,87 @@ class MainWindow(QMainWindow):
             button = getattr(self, name, None)
             if isinstance(button, QPushButton):
                 self._menu_group.addButton(button)
+                self._setup_button_hover(button)
                 button.clicked.connect(
                     lambda checked=False, b=button: self.switch_page(b)
                 )
+
+    def _setup_button_hover(self, button: QPushButton) -> None:
+        """给登录/菜单按钮装 hover 颜色过渡（0.1s 平滑变化，而非渐变）。"""
+        button.installEventFilter(self)
+        self._animated_buttons.add(button)
+        button.toggled.connect(
+            lambda checked, b=button: self._on_button_toggled(b, checked)
+        )
+
+        animation = QVariantAnimation(button)
+        animation.setDuration(BUTTON_HOVER_MS)
+        animation.valueChanged.connect(
+            lambda value, b=button: self._on_button_anim_value(b, value)
+        )
+        self._button_anims[button] = animation
+        self._set_button_style(
+            button,
+            (
+                self._button_colors["checked"]
+                if button.isChecked()
+                else self._button_colors["normal"]
+            ),
+        )
+
+    def _on_button_toggled(self, button: QPushButton, checked: bool) -> None:
+        """按钮选中/取消选中时修正背景色，避免残留 hover 颜色。"""
+        animation = self._button_anims.get(button)
+        if animation is not None:
+            animation.stop()
+        if checked:
+            self._button_current[button] = QColor(self._button_colors["checked"])
+        else:
+            # 先让常态色等于当前显示色，再平滑过渡回常态色，防止闪烁
+            current = self._button_current.get(
+                button, self._button_colors["normal"]
+            )
+            self._set_button_style(button, current)
+            self._start_button_anim(button, self._button_colors["normal"])
+
+    def _reset_button_colors(self) -> None:
+        """主题切换后停止所有过渡，并把按钮恢复为常态颜色。"""
+        for animation in self._button_anims.values():
+            animation.stop()
+        for button in self._animated_buttons:
+            self._set_button_style(
+                button,
+                (
+                    self._button_colors["checked"]
+                    if button.isChecked()
+                    else self._button_colors["normal"]
+                ),
+            )
+
+    def _set_button_style(self, button: QPushButton, color: QColor) -> None:
+        """用行内样式覆盖按钮背景色（选中态始终保持选中色）。"""
+        self._button_current[button] = QColor(color)
+        normal = QColor(color).name(QColor.NameFormat.HexRgb)
+        checked = self._button_colors["checked"].name(QColor.NameFormat.HexRgb)
+        button.setStyleSheet(
+            f"QPushButton {{ background-color: {normal}; }}"
+            f"QPushButton:checked {{ background-color: {checked}; }}"
+        )
+
+    def _start_button_anim(self, button: QPushButton, end_color: QColor) -> None:
+        """从当前颜色平滑过渡到目标颜色。"""
+        animation = self._button_anims.get(button)
+        if animation is None:
+            return
+        start = self._button_current.get(button, self._button_colors["normal"])
+        animation.stop()
+        animation.setStartValue(start)
+        animation.setEndValue(QColor(end_color))
+        animation.start()
+
+    def _on_button_anim_value(self, button: QPushButton, value) -> None:
+        """动画每一帧刷新按钮背景色。"""
+        self._set_button_style(button, QColor(value))
 
     def _connect_window_buttons(self) -> None:
         """标题栏按钮：最小化 / 关闭，以及启动页的业务按钮。"""
@@ -185,7 +289,13 @@ class MainWindow(QMainWindow):
             )
 
     def eventFilter(self, obj: QObject, event: QEvent) -> bool:
-        """在 title_area（含标题文字）上按住左键拖动窗口。"""
+        """处理标题栏拖动，以及登录/菜单按钮的 hover 颜色过渡。"""
+        if isinstance(obj, QPushButton) and obj in self._animated_buttons:
+            if event.type() == QEvent.Type.Enter and not obj.isChecked():
+                self._start_button_anim(obj, self._button_colors["hover"])
+            elif event.type() == QEvent.Type.Leave and not obj.isChecked():
+                self._start_button_anim(obj, self._button_colors["normal"])
+
         title_area = getattr(self, "title_area", None)
         title_label = getattr(self, "title", None)
         if obj is title_area or obj is title_label:

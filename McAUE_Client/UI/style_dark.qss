@@ -72,47 +72,38 @@
    QButtonGroup 按钮：无边框 + 大圆角（半径 = 高度一半）
    ===================================================== */
 
-/* 登录方式组（正版 / 离线 / 第三方）：选中为蓝色 */
+/* 登录方式组（正版 / 离线 / 第三方） */
 #horizontalLayoutWidget QPushButton {
     border: none;
     border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
     min-height: 20px;
     padding-left: 12px;
     padding-right: 12px;
-    background-color: rgba(255, 255, 255, 28);
-    color: #A9C0FF;
+    background-color: #3E5FCC;
+    color: #ffffff;
     font-weight: bold;
 }
 
-#horizontalLayoutWidget QPushButton:hover {
-    background-color: rgba(74, 125, 255, 70);
-}
-
 #horizontalLayoutWidget QPushButton:checked {
-    background-color: #4A7DFF;
+    background-color: #CC1970;      /* 选中：纯色，无渐变 */
     color: #ffffff;
 }
 
-/* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多）：选中为粉色 */
+/* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多） */
 #horizontalLayoutWidget_2 QPushButton {
     border: none;
     border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
     min-height: 20px;
     padding-left: 24px;
     padding-right: 24px;
-    background-color: transparent;
-    color: rgba(255, 255, 255, 200);
+    background-color: #3E5FCC;
+    color: #ffffff;
     font-weight: bold;
 }
 
-#horizontalLayoutWidget_2 QPushButton:hover {
-    background-color: rgba(255, 255, 255, 45);
-    color: #ffffff;
-}
-
 #horizontalLayoutWidget_2 QPushButton:checked {
-    background-color: rgba(255, 255, 255, 235);
-    color: #E84393;
+    background-color: #CC1970;      /* 选中：纯色，无渐变 */
+    color: #ffffff;
 }
 
 /* ---------- 启动页其他控件 ---------- */
