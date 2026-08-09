@@ -1,6 +1,6 @@
 {
   "mem_mode": "custom",
-  "mem_value": 69,
+  "mem_value": 10,
   "jvm_para": "-XX:-OmitStackTraceInFastThrow -Djdk.lang.Process.allowAmbiguousCommands=True -Dfml.ignoreInvalidMinecraftCertificates=True -Dfml.ignorePatchDiscrepancies=True",
   "game_para": "",
   "cmd_before_launch": "",
