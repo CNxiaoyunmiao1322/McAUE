@@ -58,6 +58,13 @@ class McAUEApp:
         self.state.current_route = route
         self.render(page)
 
+    def handle_user_click(self, page: ft.Page):
+        if self.state.logged_in:
+            self.state.settings_tab = "manage"
+            self.navigate(page, "/settings")
+        else:
+            self.show_login(page)
+
     # ===== 登录弹窗 =====
 
     def show_login(self, page: ft.Page, initial_state=None):
@@ -129,7 +136,7 @@ class McAUEApp:
             "on_navigate": lambda rt: self.navigate(page, rt),
             "on_toggle_theme": lambda: self.toggle_theme(page),
             "on_set_theme": lambda mode: self.set_theme(page, mode),
-            "on_user_click": lambda: self.show_login(page),
+            "on_user_click": lambda: self.handle_user_click(page),
             "theme_mode": self.theme.mode,
         }
         if route == "/settings":

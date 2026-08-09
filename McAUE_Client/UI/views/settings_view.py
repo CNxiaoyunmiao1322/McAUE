@@ -44,14 +44,16 @@ def _build_section_title(page: ft.Page, title: str, icon: str) -> ft.Control:
 
 def _build_setting_row(page: ft.Page, label: str, subtitle: str, control: ft.Control) -> ft.Control:
     c = Colors.from_page(page)
+    label_controls = [
+        ft.Text(label, size=14, weight=ft.FontWeight.W_500, color=c["on_surface"]),
+    ]
+    if subtitle:
+        label_controls.append(ft.Text(subtitle, size=12, color=c["on_surface_variant"]))
     return ft.Container(
         content=ft.Row(
             controls=[
                 ft.Column(
-                    controls=[
-                        ft.Text(label, size=14, weight=ft.FontWeight.W_500, color=c["on_surface"]),
-                        ft.Text(subtitle, size=12, color=c["on_surface_variant"]),
-                    ],
+                    controls=label_controls,
                     spacing=2,
                     expand=True,
                 ),
@@ -212,6 +214,7 @@ def _make_dropdown(page, value, options, width=160):
         value=value,
         options=options,
         width=width,
+        text_size=13,
         border_color=c["outline"],
         color=c["on_surface"],
         bgcolor=c["surface_variant"],
@@ -260,13 +263,132 @@ def _make_button(page, text, icon, bgcolor_key="primary"):
 # ===== 各子页面构建 =====
 
 def _build_launch_page(page, total_mem, used_mem):
+    c = Colors.from_page(page)
+
+    # ===== 启动选项 =====
+    instance_isolation = _make_dropdown(page, "all", [
+        ft.dropdown.Option("off", "关闭"),
+        ft.dropdown.Option("mods", "隔离可安装模组的实例"),
+        ft.dropdown.Option("non_release", "隔离非正式版"),
+        ft.dropdown.Option("mods_non_release", "隔离可安装模组的实例与非正式版"),
+        ft.dropdown.Option("all", "隔离所有实例"),
+    ], width=280)
+
+    window_title = _make_text_field(page, "窗口标题", "Minecraft 1.21.4", ft.Icons.TITLE)
+
+    custom_info = _make_text_field(page, "自定义信息", "自定义 F3 信息", ft.Icons.INFO_OUTLINE)
+
+    launcher_visibility = _make_dropdown(page, "keep", [
+        ft.dropdown.Option("close", "游戏启动后立即关闭"),
+        ft.dropdown.Option("hide_close", "游戏启动后隐藏，退出后关闭"),
+        ft.dropdown.Option("hide_reopen", "游戏启动后隐藏，退出后重开"),
+        ft.dropdown.Option("minimize", "游戏启动后最小化"),
+        ft.dropdown.Option("keep", "游戏启动后仍保持不变"),
+    ], width=280)
+
+    process_priority = _make_dropdown(page, "normal", [
+        ft.dropdown.Option("realtime", "实时"),
+        ft.dropdown.Option("very_high", "极高"),
+        ft.dropdown.Option("high", "高"),
+        ft.dropdown.Option("normal", "中（平衡）"),
+        ft.dropdown.Option("low", "低"),
+    ], width=280)
+
+    # 窗口大小：下拉框 + 自定义尺寸输入
+    window_size_dd = _make_dropdown(page, "default", [
+        ft.dropdown.Option("fullscreen", "全屏"),
+        ft.dropdown.Option("default", "默认"),
+        ft.dropdown.Option("launcher", "与启动器尺寸一致"),
+        ft.dropdown.Option("custom", "自定义尺寸"),
+        ft.dropdown.Option("maximize", "最大化"),
+    ], width=280)
+
+    custom_w = ft.TextField(
+        hint_text="宽", width=70, text_size=13,
+        border_color=c["outline"], color=c["on_surface"],
+        bgcolor=c["surface_variant"], filled=True,
+    )
+    custom_h = ft.TextField(
+        hint_text="高", width=70, text_size=13,
+        border_color=c["outline"], color=c["on_surface"],
+        bgcolor=c["surface_variant"], filled=True,
+    )
+    custom_size_row = ft.Row(
+        controls=[
+            custom_w,
+            ft.Text("×", size=13, color=c["on_surface_variant"]),
+            custom_h,
+        ],
+        spacing=6,
+        visible=False,
+    )
+
+    def on_window_size_change(e):
+        custom_size_row.visible = e.control.value == "custom"
+        try:
+            custom_size_row.update()
+        except Exception:
+            pass
+
+    window_size_dd.on_select = on_window_size_change
+
+    window_size_control = ft.Column(
+        controls=[window_size_dd, custom_size_row],
+        spacing=6,
+        horizontal_alignment=ft.CrossAxisAlignment.END,
+    )
+
+    auth_method = _make_dropdown(page, "device", [
+        ft.dropdown.Option("device", "设备代码流"),
+        ft.dropdown.Option("pkce", "授权码流程 (PKCE)"),
+    ], width=280)
+
+    ip_protocol = _make_dropdown(page, "default", [
+        ft.dropdown.Option("ipv4", "IPv4 优先"),
+        ft.dropdown.Option("default", "Java 默认"),
+        ft.dropdown.Option("ipv6", "IPv6 优先"),
+    ], width=280)
+
+    # ===== 高级启动选项 =====
+    renderer = _make_dropdown(page, "default", [
+        ft.dropdown.Option("default", "游戏默认"),
+        ft.dropdown.Option("llvmpipe", "软渲染 (llvmpipe)"),
+        ft.dropdown.Option("d3d12", "DirectX12 (d3d12)"),
+        ft.dropdown.Option("zink", "Vulkan (zink)"),
+    ], width=280)
+
+    jvm_args_head = _make_text_field(page, "JVM 参数头部", "-Djava.awt.headless=true", ft.Icons.TERMINAL)
+    game_args_tail = _make_text_field(page, "游戏参数尾部", "--width 1280 --height 720", ft.Icons.TERMINAL)
+    pre_exec_cmd = _make_text_field(page, "启动前执行命令", "输入命令...", ft.Icons.TERMINAL)
+
     return ft.Column(
         controls=[
             _build_section_title(page, "启动", ft.Icons.ROCKET_LAUNCH_OUTLINED),
+
+            ft.Text("启动选项", size=14, weight=ft.FontWeight.W_600, color=c["primary"]),
+            _build_setting_row(page, "默认实例隔离", "选择实例隔离策略", instance_isolation),
+            _build_setting_row(page, "游戏窗口标题", "自定义游戏窗口显示标题", window_title),
+            _build_setting_row(page, "自定义信息", "自定义 F3 显示信息", custom_info),
+            _build_setting_row(page, "启动器可见性", "游戏运行时启动器的行为", launcher_visibility),
+            _build_setting_row(page, "进程优先级", "选择游戏进程优先级", process_priority),
+            _build_setting_row(page, "窗口大小", "游戏窗口大小模式", window_size_control),
+            _build_setting_row(page, "正版验证方式", "Microsoft 账户验证流程", auth_method),
+            _build_setting_row(page, "IP 协议偏好", "网络连接 IP 协议偏好", ip_protocol),
+
+            ft.Text("游戏内存", size=14, weight=ft.FontWeight.W_600, color=c["primary"]),
             _build_memory_panel(page, total_mem, used_mem),
-            _build_setting_row(page, "全屏模式", "启动时以全屏模式运行", _make_switch(page, True)),
-            _build_setting_row(page, "垂直同步", "减少画面撕裂", _make_switch(page, True)),
-            _build_setting_row(page, "启动参数", "自定义 JVM 启动参数", _make_text_field(page, "JVM 参数", "-Xmx4G -Xms2G", ft.Icons.TERMINAL)),
+
+            ft.Text("高级启动选项", size=14, weight=ft.FontWeight.W_600, color=c["primary"]),
+            _build_setting_row(page, "渲染器", "游戏渲染后端", renderer),
+            _build_setting_row(page, "JVM 参数头部", "附加在 JVM 启动参数前部", jvm_args_head),
+            _build_setting_row(page, "游戏参数尾部", "传递给游戏的额外参数", game_args_tail),
+            _build_setting_row(page, "启动前执行命令", "游戏启动前执行的系统命令", pre_exec_cmd),
+            _build_setting_row(page, "禁用 Java Launch Wrapper", "", _make_switch(page, False)),
+            _build_setting_row(page, "禁用 LegacyFix", "", _make_switch(page, False)),
+            _build_setting_row(page, "要求 Java 使用高性能显卡", "", _make_switch(page, False)),
+            _build_setting_row(page, "使用 java.exe 而不是 javaw.exe", "", _make_switch(page, True)),
+            _build_setting_row(page, "禁用 LWJGL Unsafe Agent", "", _make_switch(page, False)),
+            _build_setting_row(page, "禁用自动崩溃分析", "", _make_switch(page, False)),
         ],
         spacing=8,
         scroll=ft.ScrollMode.AUTO,
@@ -537,11 +659,24 @@ def build_settings_view(
         for tid, icon in nav_icons.items():
             active = tid == tab_id
             icon.color = "#FFFFFF" if active else c["on_surface_variant"]
+            try:
+                icon.update()
+            except Exception:
+                pass
         for tid, btn in nav_containers.items():
             active = tid == tab_id
             btn.bgcolor = c["primary"] if active else c["surface_variant"]
-        content_area.content = _build_tab_content(page, tab_id, state, total_mem, used_mem, theme_mode, on_set_theme, on_logout)
-        page.update()
+            try:
+                btn.update()
+            except Exception:
+                pass
+        new_content = _build_tab_content(page, tab_id, state, total_mem, used_mem, theme_mode, on_set_theme, on_logout)
+        new_content.key = f"tab_{tab_id}"
+        content_switcher.content = new_content
+        try:
+            content_switcher.update()
+        except Exception:
+            pass
 
     nav_containers = {}
     for tab_id, label, icon_name in SETTINGS_TABS:
@@ -571,13 +706,19 @@ def build_settings_view(
         width=140,
     )
 
-    content_area = ft.Container(
-        content=_build_tab_content(page, current_tab["value"], state, total_mem, used_mem, theme_mode, on_set_theme, on_logout),
+    _initial_content = _build_tab_content(page, current_tab["value"], state, total_mem, used_mem, theme_mode, on_set_theme, on_logout)
+    _initial_content.key = f"tab_{current_tab['value']}"
+
+    content_switcher = ft.AnimatedSwitcher(
+        content=_initial_content,
+        transition=ft.AnimatedSwitcherTransition.FADE,
+        duration=400,
+        reverse_duration=300,
         expand=True,
     )
 
     body = ft.Row(
-        controls=[sidebar, content_area],
+        controls=[sidebar, content_switcher],
         spacing=12,
         vertical_alignment=ft.CrossAxisAlignment.START,
         expand=True,

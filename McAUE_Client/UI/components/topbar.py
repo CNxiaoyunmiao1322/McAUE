@@ -18,6 +18,7 @@ def build_topbar(
 
     display_name = username if logged_in else "点击登录"
     avatar_text = (username[:2] if username else "P").upper() if logged_in else "?"
+    user_tooltip = "前往账户管理" if logged_in else "点击登录"
 
     user_chip = ft.Container(
         content=ft.Row(
@@ -45,11 +46,6 @@ def build_topbar(
                     weight=ft.FontWeight.W_500,
                     color=c["on_surface"] if logged_in else c["primary"],
                 ),
-                ft.Icon(
-                    ft.Icons.KEYBOARD_ARROW_DOWN,
-                    color=c["on_surface_variant"],
-                    size=16,
-                ),
             ],
             spacing=6,
         ),
@@ -58,7 +54,7 @@ def build_topbar(
         border=ft.Border.all(1, c["outline_variant"]),
         ink=True,
         on_click=lambda _: on_user_click() if on_user_click else None,
-        tooltip="点击登录或切换账户",
+        tooltip=user_tooltip,
     )
 
     is_dark = page.theme_mode == ft.ThemeMode.DARK
