@@ -22,6 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Downloader\engine.py" />
+    <Compile Include="Downloader\task.py" />
+    <Compile Include="Downloader\verify.py" />
+    <Compile Include="Downloader\__init__.py" />
     <Compile Include="McAUE_Client.py" />
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +46,7 @@
     <Content Include="UI\untitled.ui" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Downloader\" />
     <Folder Include="UI\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
