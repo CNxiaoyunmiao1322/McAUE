@@ -1,5 +1,6 @@
 """PCL2 风格自定义标题栏 - 替代系统标题栏。"""
 
+import os
 import flet as ft
 
 from theme.colors import Colors
@@ -89,8 +90,15 @@ def build_titlebar(page: ft.Page) -> ft.Control:
         )
         page.update()
 
+    async def _do_close_async():
+        try:
+            await page.window.close()
+        except Exception:
+            pass
+        os._exit(0)
+
     def do_close(e):
-        page.run_task(page.window.destroy)
+        page.run_task(_do_close_async)
 
     min_btn = _win_btn(
         ft.Icons.HORIZONTAL_RULE,
