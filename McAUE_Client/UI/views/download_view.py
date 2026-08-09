@@ -111,26 +111,6 @@ def _build_leaf_item(c, item, is_selected, on_click) -> ft.Control:
     )
 
 
-def _build_group_header(c, item, is_expanded, on_toggle) -> ft.Control:
-    arrow = ft.Icons.EXPAND_MORE if is_expanded else ft.Icons.CHEVRON_RIGHT
-
-    return ft.Container(
-        content=ft.Row(
-            controls=[
-                ft.Icon(item["icon"], color=c["on_surface_variant"], size=20),
-                ft.Text(item["label"], size=14, weight=ft.FontWeight.W_600, color=c["on_surface"]),
-                ft.Container(expand=True),
-                ft.Icon(arrow, color=c["on_surface_variant"], size=18),
-            ],
-            spacing=10,
-        ),
-        padding=ft.Padding(left=14, right=14, top=10, bottom=10),
-        border_radius=8,
-        ink=True,
-        on_click=lambda _: on_toggle(item["id"]),
-    )
-
-
 def _build_child_item(c, child, is_selected, on_click) -> ft.Control:
     icon_color = c["primary"] if is_selected else c["on_surface_variant"]
     text_color = c["primary"] if is_selected else c["on_surface"]
@@ -155,30 +135,108 @@ def _build_child_item(c, child, is_selected, on_click) -> ft.Control:
     )
 
 
-def _build_menu(page, state, on_navigate, on_toggle_group) -> ft.Control:
+def _build_menu(page, state, on_content_change) -> ft.Control:
     c = Colors.from_page(page)
-    selected = state.download_category
-    expanded = state.download_expanded
+    menu_column = ft.Column(controls=[], spacing=2, scroll=ft.ScrollMode.AUTO, expand=True)
+    group_refs = {}
 
-    controls = []
-    for item in MENU_ITEMS:
-        if item["type"] == "leaf":
-            controls.append(
-                _build_leaf_item(c, item, selected == item["id"], on_navigate)
+    def toggle_group(group_id):
+        if group_id in state.download_expanded:
+            state.download_expanded.remove(group_id)
+        else:
+            state.download_expanded.append(group_id)
+        refs = group_refs.get(group_id)
+        if not refs:
+            return
+        is_exp = group_id in state.download_expanded
+        refs["arrow"].rotate = 1.5708 if is_exp else 0
+        item = next(i for i in MENU_ITEMS if i["id"] == group_id)
+        if is_exp:
+            new_content = ft.Column(
+                controls=[
+                    _build_child_item(c, child, state.download_category == child["id"], handle_select)
+                    for child in item["children"]
+                ],
+                spacing=2,
             )
         else:
-            is_expanded = item["id"] in expanded
-            controls.append(
-                _build_group_header(c, item, is_expanded, on_toggle_group)
-            )
-            if is_expanded:
-                for child in item["children"]:
-                    controls.append(
-                        _build_child_item(c, child, selected == child["id"], on_navigate)
+            new_content = ft.Container()
+        refs["switcher"].content = new_content
+        try:
+            refs["arrow"].update()
+            refs["switcher"].update()
+        except Exception:
+            pass
+
+    def handle_select(category_id):
+        state.download_category = category_id
+        rebuild()
+        try:
+            menu_column.update()
+        except Exception:
+            pass
+        on_content_change(category_id)
+
+    def rebuild():
+        selected = state.download_category
+        group_refs.clear()
+        controls = []
+        for item in MENU_ITEMS:
+            if item["type"] == "leaf":
+                controls.append(
+                    _build_leaf_item(c, item, selected == item["id"], handle_select)
+                )
+            else:
+                is_exp = item["id"] in state.download_expanded
+                arrow = ft.Container(
+                    content=ft.Icon(
+                        ft.Icons.CHEVRON_RIGHT,
+                        color=c["on_surface_variant"],
+                        size=18,
+                    ),
+                    rotate=1.5708 if is_exp else 0,
+                    animate=ft.Animation(duration=200, curve=ft.AnimationCurve.EASE_IN_OUT),
+                )
+                header = ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.Icon(item["icon"], color=c["on_surface_variant"], size=20),
+                            ft.Text(item["label"], size=14, weight=ft.FontWeight.W_600, color=c["on_surface"]),
+                            ft.Container(expand=True),
+                            arrow,
+                        ],
+                        spacing=10,
+                    ),
+                    padding=ft.Padding(left=14, right=14, top=10, bottom=10),
+                    border_radius=8,
+                    ink=True,
+                    on_click=lambda _, gid=item["id"]: toggle_group(gid),
+                )
+                if is_exp:
+                    children_content = ft.Column(
+                        controls=[
+                            _build_child_item(c, child, selected == child["id"], handle_select)
+                            for child in item["children"]
+                        ],
+                        spacing=2,
                     )
+                else:
+                    children_content = ft.Container()
+                switcher = ft.AnimatedSwitcher(
+                    content=children_content,
+                    transition=ft.AnimatedSwitcherTransition.FADE,
+                    duration=200,
+                    reverse_duration=150,
+                )
+                group_refs[item["id"]] = {"switcher": switcher, "arrow": arrow}
+                controls.append(header)
+                controls.append(switcher)
+        menu_column.controls = controls
+
+    rebuild()
 
     return ft.Container(
-        content=ft.Column(controls=controls, spacing=2, scroll=ft.ScrollMode.AUTO, expand=True),
+        content=menu_column,
         padding=ft.Padding(8, 8, 8, 8),
         bgcolor=c["surface"],
         border_radius=12,
@@ -366,30 +424,41 @@ def _build_placeholder_content(page, category_id) -> ft.Control:
 
 # ===== 主视图 =====
 
+def _build_category_content(page, category) -> ft.Control:
+    """根据分类构建对应的内容区。"""
+    if category == "mc_install":
+        return _build_version_content(page, is_jar=False)
+    elif category == "installer_mc_jar":
+        return _build_version_content(page, is_jar=True)
+    else:
+        return _build_placeholder_content(page, category)
+
+
 def build_download_view(
     page: ft.Page,
     state,
     on_navigate=None,
     on_toggle_theme=None,
     on_user_click=None,
-    on_download_navigate=None,
-    on_toggle_group=None,
     **kwargs,
 ) -> list:
     """构建下载页视图。"""
-    category = state.download_category
 
-    nav_cb = on_download_navigate or (lambda _: None)
-    toggle_cb = on_toggle_group or (lambda _: None)
+    content_switcher = ft.AnimatedSwitcher(
+        content=_build_category_content(page, state.download_category),
+        transition=ft.AnimatedSwitcherTransition.FADE,
+        duration=200,
+        reverse_duration=150,
+    )
 
-    menu = _build_menu(page, state, nav_cb, toggle_cb)
+    def on_content_change(category_id):
+        content_switcher.content = _build_category_content(page, category_id)
+        try:
+            content_switcher.update()
+        except Exception:
+            pass
 
-    if category == "mc_install":
-        content = _build_version_content(page, is_jar=False)
-    elif category == "installer_mc_jar":
-        content = _build_version_content(page, is_jar=True)
-    else:
-        content = _build_placeholder_content(page, category)
+    menu = _build_menu(page, state, on_content_change)
 
     layout = ft.Column(
         controls=[
@@ -406,7 +475,7 @@ def build_download_view(
                 controls=[
                     menu,
                     ft.Container(
-                        content=content,
+                        content=content_switcher,
                         expand=True,
                         padding=ft.Padding(left=16, right=0, top=0, bottom=0),
                     ),

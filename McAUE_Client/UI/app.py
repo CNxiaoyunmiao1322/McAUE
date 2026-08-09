@@ -58,17 +58,6 @@ class McAUEApp:
         self.state.current_route = route
         self.render(page)
 
-    def navigate_download(self, page: ft.Page, category: str):
-        self.state.download_category = category
-        self.render(page)
-
-    def toggle_download_group(self, page: ft.Page, group: str):
-        if group in self.state.download_expanded:
-            self.state.download_expanded.remove(group)
-        else:
-            self.state.download_expanded.append(group)
-        self.render(page)
-
     # ===== 登录弹窗 =====
 
     def show_login(self, page: ft.Page, initial_state=None):
@@ -145,9 +134,6 @@ class McAUEApp:
         }
         if route == "/settings":
             kwargs["on_logout"] = lambda: self.logout(page)
-        if route == "/download":
-            kwargs["on_download_navigate"] = lambda cat: self.navigate_download(page, cat)
-            kwargs["on_toggle_group"] = lambda grp: self.toggle_download_group(page, grp)
 
         return view_builder(**kwargs)
 
