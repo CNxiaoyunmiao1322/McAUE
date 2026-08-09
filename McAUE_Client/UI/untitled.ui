@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="launch">
      <property name="styleSheet">
@@ -150,7 +150,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="mem_option">
        <widget class="QRadioButton" name="mem_auto">
@@ -265,9 +265,9 @@ QSlider::sub-page:horizontal {
        <widget class="QLabel" name="game_use_mem_label">
         <property name="geometry">
          <rect>
-          <x>490</x>
+          <x>290</x>
           <y>180</y>
-          <width>101</width>
+          <width>301</width>
           <height>20</height>
          </rect>
         </property>

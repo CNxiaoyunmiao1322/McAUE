@@ -316,10 +316,16 @@ class MainWindow(QMainWindow):
         used_gb = (total - avail) / gb
         total_gb = total / gb
         game_gb = self._current_game_memory_bytes() / gb
+        free_gb = avail / gb
         if hasattr(self, "used_mem_label"):
             self.used_mem_label.setText(f"{used_gb:.1f}/{total_gb:.1f} GB")
         if hasattr(self, "game_use_mem_label"):
-            self.game_use_mem_label.setText(f"{game_gb:.1f} GB")
+            if game_gb > free_gb:
+                self.game_use_mem_label.setText(
+                    f"{game_gb:.1f} GB（空闲 {free_gb:.1f} GB）"
+                )
+            else:
+                self.game_use_mem_label.setText(f"{game_gb:.1f} GB")
         mem_display = getattr(self, "mem_display", None)
         if mem_display is not None:
             mem_display.update()
@@ -359,7 +365,7 @@ class MainWindow(QMainWindow):
         total, avail = self._get_system_memory()
         if getattr(self, "mem_custom", None) is not None and self.mem_custom.isChecked():
             percent = self.mem_slider.value() if hasattr(self, "mem_slider") else 0
-            return int(avail * percent / 100)
+            return int(total * percent / 100)
         return int(self._get_auto_game_memory_gb() * 1024 ** 3)
 
     def _paint_mem_display(self, widget) -> None:
