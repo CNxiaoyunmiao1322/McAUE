@@ -3,6 +3,11 @@
    各区域背景颜色 + QButtonGroup 按钮（无边框大圆角）
    ===================================================== */
 
+/* 全局字体调大一档：默认 9pt -> 10pt */
+QWidget {
+    font-size: 10pt;
+}
+
 /* ---------- 主窗口卡片：浅蓝底 + 圆角 ---------- */
 #centralwidget {
     background-color: rgba(235, 240, 255, 235);
@@ -21,6 +26,7 @@
     background: transparent;
     color: #ffffff;
     font-weight: bold;
+    font-size: 17pt;
 }
 
 /* 标题栏最小化 / 关闭按钮 */
@@ -28,12 +34,13 @@
     border: none;
     background: transparent;
     color: #ffffff;
-    font-size: 14px;
+    font-size: 15px;
+    min-height: 33px;
 }
 
 #min_button:hover, #quit_button:hover {
     background-color: rgba(255, 255, 255, 45);
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 #quit_button:hover {
@@ -45,14 +52,9 @@
     background-color: transparent;
 }
 
-/* 启动页：浅蓝白 */
-#launch {
+/* 所有子页面共用同一背景：浅蓝白 */
+#launch, #page_2, #setting {
     background-color: rgba(246, 249, 255, 240);
-}
-
-/* 其他页面（下载 / 工具 / 设置 / 更多共用的占位页）：浅粉白 */
-#page_2 {
-    background-color: rgba(255, 244, 249, 240);
 }
 
 /* 左侧登录功能区：淡粉 */
@@ -75,8 +77,8 @@
 /* 登录方式组（正版 / 离线 / 第三方） */
 #horizontalLayoutWidget QPushButton {
     border: none;
-    border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
-    min-height: 20px;
+    border-radius: 11px;            /* 按钮高度 22px，半径 = 22 / 2 */
+    min-height: 22px;
     padding-left: 12px;
     padding-right: 12px;
     background-color: #8EDCFF;
@@ -92,8 +94,8 @@
 /* 底部菜单组（启动 / 下载 / 工具 / 设置 / 更多） */
 #horizontalLayoutWidget_2 QPushButton {
     border: none;
-    border-radius: 10px;            /* 按钮高度 20px，半径 = 20 / 2 */
-    min-height: 20px;
+    border-radius: 11px;            /* 按钮高度 22px，半径 = 22 / 2 */
+    min-height: 22px;
     padding-left: 24px;
     padding-right: 24px;
     background-color: #8EDCFF;
@@ -106,15 +108,125 @@
     color: #ffffff;
 }
 
+/* ---------- 设置页 ---------- */
+
+/* 左侧选项按钮（启动选项 / 内存分配 / 高级选项） */
+#verticalLayoutWidget QPushButton {
+    border: none;
+    border-radius: 11px;            /* 按钮高度 22px，半径 = 22 / 2 */
+    min-height: 22px;
+    max-height: 22px;
+    padding-left: 12px;
+    padding-right: 12px;
+    background-color: #8EDCFF;
+    color: #1E3A5F;
+    font-weight: bold;
+}
+
+#verticalLayoutWidget QPushButton:checked {
+    background-color: #FF80BD;      /* 选中：纯色，无渐变 */
+    color: #ffffff;
+}
+
+/* 设置页容器与子页面 */
+#setting_content_area,
+#mem_option,
+#pro_setting,
+#launch_option_setting {
+    background-color: transparent;
+}
+
+/* 设置页文字 */
+#setting QLabel {
+    background: transparent;
+    color: #2F3A5C;
+}
+
+/* 输入框 / 文本浏览器 */
+#setting QLineEdit, #jvm_para {
+    border: 1px solid rgba(74, 125, 255, 90);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 235);
+    color: #2F3A5C;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#setting QLineEdit:focus {
+    border: 1px solid #4A7DFF;
+    background-color: #ffffff;
+}
+
+#jvm_para {
+    padding: 6px;
+    selection-background-color: #8EDCFF;
+}
+
+/* 下拉框 */
+#setting QComboBox {
+    border: 1px solid rgba(74, 125, 255, 90);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 235);
+    color: #2F3A5C;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#setting QComboBox QAbstractItemView {
+    border: 1px solid rgba(74, 125, 255, 120);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #2F3A5C;
+    selection-background-color: #8EDCFF;
+    selection-color: #1E3A5F;
+    outline: none;
+}
+
+/* 内存滑块 */
+#mem_slider::groove:horizontal {
+    height: 8px;
+    background: rgba(74, 125, 255, 60);
+    border-radius: 4px;
+}
+
+#mem_slider::sub-page:horizontal {
+    background: #4A7DFF;
+    border-radius: 4px;
+}
+
+#mem_slider::handle:horizontal {
+    width: 18px;
+    height: 18px;
+    margin: -5px 0;
+    border-radius: 9px;
+    background: #ffffff;
+    border: 2px solid #4A7DFF;
+}
+
+/* 禁用状态：明显变灰，方便区分是否可控制 */
+#mem_slider::groove:horizontal:disabled {
+    background: rgba(128, 128, 128, 80);
+}
+
+#mem_slider::sub-page:horizontal:disabled {
+    background: rgba(128, 128, 128, 80);
+}
+
+#mem_slider::handle:horizontal:disabled {
+    background: #d8d8d8;
+    border: 2px solid #b0b0b0;
+}
+
 /* ---------- 启动页其他控件 ---------- */
 
 /* 启动游戏按钮（高度 61px）：青色主按钮 */
 #launch_game_button {
     border: none;
-    border-radius: 30px;
+    border-radius: 31px;
+    min-height: 63px;
     background-color: #40E0D0;
     color: #ffffff;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: bold;
 }
 
@@ -129,7 +241,9 @@
 /* 选择版本按钮（高度 26px）：蓝色描边 */
 #choose_version_button {
     border: 1px solid rgba(62, 95, 204, 150);
-    border-radius: 13px;
+    border-radius: 14px;
+    min-height: 28px;
+    max-height: 28px;
     background-color: transparent;
     color: #3E5FCC;
 }
@@ -144,6 +258,7 @@
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 235);
     color: #2F3A5C;
+    font-size: 11pt;
     padding-left: 10px;
     padding-right: 10px;
 }

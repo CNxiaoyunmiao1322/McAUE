@@ -1,0 +1,14 @@
+{
+  "mem_mode": "custom",
+  "mem_value": 69,
+  "jvm_para": "-XX:-OmitStackTraceInFastThrow -Djdk.lang.Process.allowAmbiguousCommands=True -Dfml.ignoreInvalidMinecraftCertificates=True -Dfml.ignorePatchDiscrepancies=True",
+  "game_para": "",
+  "cmd_before_launch": "",
+  "java_list": "",
+  "ban_jlw": false,
+  "ban_lwjgl": false,
+  "version_isolate": 0,
+  "game_title": "",
+  "setting_custom_info": "PCL",
+  "launcher_visble": 0
+}
