@@ -22,6 +22,7 @@ from PySide6.QtCore import (
     QPoint,
     QPropertyAnimation,
     QRect,
+    QTimer,
     QVariantAnimation,
     Qt,
 )
@@ -297,7 +298,7 @@ class MainWindow(QMainWindow):
         self._set_slider_handle(self._button_colors["slider_handle"])
 
     def _setup_memory_page(self) -> None:
-        """内存分配页：真实内存数值、自动/手动分配逻辑、mem_display 绘图。"""
+        """内存分配页：真实内存数值、自动/手动分配逻辑、mem_display 绘图、1s 实时刷新。"""
         mem_display = getattr(self, "mem_display", None)
         if mem_display is not None:
             mem_display.installEventFilter(self)
@@ -306,6 +307,11 @@ class MainWindow(QMainWindow):
                 radio.toggled.connect(self._update_memory_display)
         if hasattr(self, "mem_slider"):
             self.mem_slider.valueChanged.connect(self._update_memory_display)
+        # 每 1 秒刷新一次已用/空闲内存
+        self._memory_timer = QTimer(self)
+        self._memory_timer.setInterval(1000)
+        self._memory_timer.timeout.connect(self._update_memory_display)
+        self._memory_timer.start()
 
     def _update_memory_display(self) -> None:
         """刷新内存标签和 mem_display 绘图。"""
