@@ -37,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="UI\style.qss" />
+    <Content Include="UI\style_dark.qss" />
+    <Content Include="UI\untitled.ui" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UI\" />

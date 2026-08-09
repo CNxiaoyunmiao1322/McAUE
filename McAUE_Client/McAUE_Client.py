@@ -18,7 +18,7 @@ from PySide6.QtCore import (
     QIODevice,
     QObject,
     QPoint,
-    QPropertyAnimation,
+    QPropertyAnimation,  
     QVariantAnimation,
     Qt,
 )
