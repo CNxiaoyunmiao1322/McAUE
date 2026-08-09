@@ -61,35 +61,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="UI\components\__pycache__\card.cpython-314.pyc" />
-    <Content Include="UI\components\__pycache__\login_dialog.cpython-314.pyc" />
-    <Content Include="UI\components\__pycache__\sidebar.cpython-314.pyc" />
-    <Content Include="UI\components\__pycache__\titlebar.cpython-314.pyc" />
-    <Content Include="UI\components\__pycache__\topbar.cpython-314.pyc" />
-    <Content Include="UI\components\__pycache__\__init__.cpython-314.pyc" />
-    <Content Include="UI\state\__pycache__\app_state.cpython-314.pyc" />
-    <Content Include="UI\state\__pycache__\__init__.cpython-314.pyc" />
-    <Content Include="UI\theme\__pycache__\colors.cpython-314.pyc" />
-    <Content Include="UI\theme\__pycache__\theme_manager.cpython-314.pyc" />
-    <Content Include="UI\theme\__pycache__\__init__.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\about_view.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\download_view.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\home_view.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\settings_view.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\tools_view.cpython-314.pyc" />
-    <Content Include="UI\views\__pycache__\__init__.cpython-314.pyc" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Downloader\" />
     <Folder Include="UI\" />
     <Folder Include="UI\components\" />
-    <Folder Include="UI\components\__pycache__\" />
     <Folder Include="UI\state\" />
-    <Folder Include="UI\state\__pycache__\" />
     <Folder Include="UI\theme\" />
-    <Folder Include="UI\theme\__pycache__\" />
     <Folder Include="UI\views\" />
-    <Folder Include="UI\views\__pycache__\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
