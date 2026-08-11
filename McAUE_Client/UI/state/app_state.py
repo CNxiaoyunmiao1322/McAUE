@@ -1,6 +1,10 @@
-"""全局应用状态 - 管理用户信息、当前视图、主题等。"""
+"""全局应用状态 - 管理用户信息、当前视图、主题等。
+
+与 config.py 集成，所有设置自动持久化到 JSON 配置文件。
+"""
 
 from dataclasses import dataclass, field
+from state.config import config
 
 
 @dataclass
@@ -21,27 +25,28 @@ class ToolItem:
 class AppState:
     """全局应用状态。"""
 
-    # 用户信息
     username: str = ""
     logged_in: bool = False
-
-    # 当前路由
     current_route: str = "/home"
-
-    # 新闻列表（示例数据）
     news: list = field(default_factory=list)
-
-    # 工具列表
     tools: list = field(default_factory=list)
-
-    # 下载页子导航状态
     download_category: str = "mc_install"
     download_expanded: list = field(default_factory=lambda: ["community", "installers"])
-
-    # 设置页当前标签
     settings_tab: str = "launch"
+    home_subview: str = "home"
+    home_vs_version: str = ""
+    about_subview: str = "about"
+    tools_subview: str = "grid"
 
     def __post_init__(self):
+        nav = config.get("navigation")
+        self.current_route = nav.get("current_route", "/home")
+        self.settings_tab = nav.get("settings_tab", "launch")
+
+        account = config.get("account")
+        self.username = account.get("username", "")
+        self.logged_in = account.get("logged_in", False)
+
         self.news = [
             NewsItem(
                 "1.21.5 快照发布",
@@ -60,18 +65,23 @@ class AppState:
             ),
         ]
         self.tools = [
-            ToolItem("种子搜索器", "根据条件筛选合适的种子", "search"),
-            ToolItem("坐标转换器", "在不同维度间转换坐标", "explore"),
-            ToolItem("附魔计算器", "计算最优附魔方案", "auto_awesome"),
-            ToolItem("合成表查询", "查询物品合成配方", "grid_view"),
-            ToolItem("NBT 编辑器", "查看和编辑 NBT 数据", "code"),
-            ToolItem("皮肤查看器", "预览玩家皮肤", "face"),
+            ToolItem("皮肤库", "浏览和下载玩家皮肤", "face"),
+            ToolItem("服务器管理", "管理游戏服务器", "dns"),
+            ToolItem("我的通行证", "查看账户通行证信息", "badge"),
         ]
 
     def login(self, username: str):
         self.username = username
         self.logged_in = True
+        config.set("account", "username", username)
+        config.set("account", "logged_in", True)
 
     def logout(self):
         self.username = ""
         self.logged_in = False
+        config.set("account", "username", "")
+        config.set("account", "logged_in", False)
+
+    def save_navigation(self):
+        config.set("navigation", "current_route", self.current_route)
+        config.set("navigation", "settings_tab", self.settings_tab)

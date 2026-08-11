@@ -29,13 +29,23 @@
     <Compile Include="Downloader\__init__.py" />
     <Compile Include="main.py" />
     <Compile Include="UI\app.py" />
+    <Compile Include="UI\components\animation.py" />
     <Compile Include="UI\components\card.py" />
     <Compile Include="UI\components\login_dialog.py" />
     <Compile Include="UI\components\sidebar.py" />
     <Compile Include="UI\components\titlebar.py" />
     <Compile Include="UI\components\topbar.py" />
     <Compile Include="UI\components\__init__.py" />
+    <Compile Include="UI\core\auth.py" />
+    <Compile Include="UI\core\downloader.py" />
+    <Compile Include="UI\core\java_manager.py" />
+    <Compile Include="UI\core\launcher.py" />
+    <Compile Include="UI\core\logger.py" />
+    <Compile Include="UI\core\news.py" />
+    <Compile Include="UI\core\updater.py" />
+    <Compile Include="UI\core\__init__.py" />
     <Compile Include="UI\state\app_state.py" />
+    <Compile Include="UI\state\config.py" />
     <Compile Include="UI\state\__init__.py" />
     <Compile Include="UI\theme\colors.py" />
     <Compile Include="UI\theme\theme_manager.py" />
@@ -43,7 +53,16 @@
     <Compile Include="UI\views\about_view.py" />
     <Compile Include="UI\views\download_view.py" />
     <Compile Include="UI\views\home_view.py" />
-    <Compile Include="UI\views\settings_view.py" />
+    <Compile Include="UI\views\settings\java_page.py" />
+    <Compile Include="UI\views\settings\language_page.py" />
+    <Compile Include="UI\views\settings\launch_page.py" />
+    <Compile Include="UI\views\settings\manage_page.py" />
+    <Compile Include="UI\views\settings\misc_page.py" />
+    <Compile Include="UI\views\settings\multiplayer_page.py" />
+    <Compile Include="UI\views\settings\personalize_page.py" />
+    <Compile Include="UI\views\settings\update_page.py" />
+    <Compile Include="UI\views\settings\_common.py" />
+    <Compile Include="UI\views\settings\__init__.py" />
     <Compile Include="UI\views\tools_view.py" />
     <Compile Include="UI\views\__init__.py" />
     <Compile Include="UI\__init__.py" />
@@ -66,9 +85,11 @@
     <Folder Include="Downloader\" />
     <Folder Include="UI\" />
     <Folder Include="UI\components\" />
+    <Folder Include="UI\core\" />
     <Folder Include="UI\state\" />
     <Folder Include="UI\theme\" />
     <Folder Include="UI\views\" />
+    <Folder Include="UI\views\settings\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

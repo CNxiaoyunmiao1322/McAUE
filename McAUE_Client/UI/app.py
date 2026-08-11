@@ -9,13 +9,15 @@ import flet as ft
 from theme.colors import Colors
 from theme.theme_manager import ThemeManager
 from state.app_state import AppState
+from state.config import config
 from components.sidebar import build_sidebar
 from components.titlebar import build_titlebar
 from components.login_dialog import build_login_dialog
+from components.animation import PAGE_DURATION, PAGE_REVERSE_DURATION
 from views.home_view import build_home_view
 from views.download_view import build_download_view
 from views.tools_view import build_tools_view
-from views.settings_view import build_settings_view
+from views.settings import build_settings_view
 from views.about_view import build_about_view
 
 
@@ -56,6 +58,7 @@ class McAUEApp:
 
     def navigate(self, page: ft.Page, route: str):
         self.state.current_route = route
+        self.state.save_navigation()
         self.render(page)
 
     def handle_user_click(self, page: ft.Page):
@@ -149,6 +152,14 @@ class McAUEApp:
         key = self.state.current_route
         if key == "/download":
             key += ":" + self.state.download_category
+        elif key == "/home":
+            key += ":" + self.state.home_subview
+            if self.state.home_vs_version:
+                key += ":" + self.state.home_vs_version
+        elif key == "/about":
+            key += ":" + self.state.about_subview
+        elif key == "/tools":
+            key += ":" + self.state.tools_subview
         key += ":" + ("dark" if self.theme.is_dark else "light")
         col = ft.Column(
             controls=self._build_content(page),
@@ -173,8 +184,8 @@ class McAUEApp:
         self._content_switcher = ft.AnimatedSwitcher(
             content=self._build_content_column(page),
             transition=ft.AnimatedSwitcherTransition.FADE,
-            duration=300,
-            reverse_duration=200,
+            duration=PAGE_DURATION,
+            reverse_duration=PAGE_REVERSE_DURATION,
             expand=True,
         )
 
@@ -226,8 +237,10 @@ class McAUEApp:
 def run_app(page: ft.Page):
     """Flet 入口函数。"""
     page.title = "McAUE - Minecraft 客户端"
-    page.window.width = 1100
-    page.window.height = 700
+
+    win_cfg = config.get("window")
+    page.window.width = win_cfg.get("width", 1100)
+    page.window.height = win_cfg.get("height", 700)
     page.window.min_width = 900
     page.window.min_height = 600
     page.window.title_bar_hidden = True
@@ -247,8 +260,21 @@ def run_app(page: ft.Page):
                 app._rebuild_login_dialog(page)
             else:
                 app.render(page)
+                rebuild = getattr(page, "_dialog_rebuild", None)
+                if rebuild:
+                    rebuild()
 
     page.on_platform_brightness_change = on_brightness_change
+
+    def on_window_event(e):
+        if e.data == "resize":
+            try:
+                config.set("window", "width", int(page.window.width))
+                config.set("window", "height", int(page.window.height))
+            except Exception:
+                pass
+
+    page.window.on_event = on_window_event
 
     app.apply_theme(page)
     app.render(page)
